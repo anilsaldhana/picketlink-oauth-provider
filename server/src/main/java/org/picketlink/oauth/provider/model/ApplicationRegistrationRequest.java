@@ -19,35 +19,51 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.oauth.provider.setup;
+package org.picketlink.oauth.provider.model;
 
-import javax.enterprise.inject.Produces;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
+import java.io.Serializable;
 
-import org.picketbox.core.config.ConfigurationBuilder;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
- * Configuration Builder
+ * Request Object for OAuth Application Registration Process
  * @author anil saldhana
- * @since Jan 8, 2013
+ * @since Jan 9, 2013
  */
-public class AuthenticationConfigurationBuilder {
+@JsonSerialize
+@XmlRootElement
+public class ApplicationRegistrationRequest implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
-    private EntityManager entityManager;
+    private String userId;
     
-    @Produces
-    public ConfigurationBuilder configure(){
-        ConfigurationBuilder builder = new ConfigurationBuilder(); 
+    private String appName;
+    
+    private String appURL;
 
-        builder.identityManager().jpaStore().setEntityManager(entityManager);//JPA Store
-        builder.sessionManager().inMemorySessionStore();
+    public String getUserId() {
+        return userId;
+    }
 
-        /*IDMSetup idmSetup = new IDMSetup();
-        idmSetup.initialize();*/
-        
-        return builder;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getAppURL() {
+        return appURL;
+    }
+
+    public void setAppURL(String appURL) {
+        this.appURL = appURL;
     }
 }

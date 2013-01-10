@@ -21,6 +21,9 @@
  */
 package org.picketlink.oauth.provider.setup;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -29,7 +32,7 @@ import javax.inject.Inject;
 import org.jboss.logging.Logger;
 import org.picketbox.core.PicketBoxManager;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.credential.PlainTextPassword;
+import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.model.SimpleUser;
 import org.picketlink.idm.model.User;
 
@@ -48,7 +51,6 @@ public class IDMSetupBean {
     
     @PostConstruct
     public void initialize(){
-        log.info("INITIAL");
         if(picketboxManager == null){
             throw new RuntimeException("PicketBox Manager has not been injected");
         }
@@ -66,11 +68,14 @@ public class IDMSetupBean {
 
             identityManager.add(admin);
             
-            identityManager.updateCredential(admin, new PlainTextPassword("admin123".toCharArray()));
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.YEAR, 100);
+            
+            identityManager.updateCredential(admin, new Password("admin123".toCharArray()), new Date(), calendar.getTime());
 
-            System.out.println("ADMIN user INJECTED!!!");
+            log.debug("ADMIN user INJECTED!!!");
         } else{
-            System.out.println("ADMIN user EXISTS!!!!");
+            log.debug("ADMIN user EXISTS!!!!");
         }
     }
 }
