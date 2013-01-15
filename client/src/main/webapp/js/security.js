@@ -57,7 +57,6 @@ $(document).ready(function() {
             success:function (data) {
                 if (data.loggedIn) {
                 	storeToken(data.token);
-                        $('#username-msg').text(data.userId);
                         window.location = getHost() + "/picketlink-apps-list.html";
                 } else {
                 	$('#login-msg').text("Authentication failed. Try again ...");
@@ -93,7 +92,7 @@ $(document).ready(function() {
 		return;
 	}
 
-	if ($('#username-msg')) {
+	if ($('#username-msg').length > 0) {
 		var jqxhr = $.ajax('/picketlink-oauth-provider-server/userinfo', {
 	        data:{},
 	        type:'GET', 

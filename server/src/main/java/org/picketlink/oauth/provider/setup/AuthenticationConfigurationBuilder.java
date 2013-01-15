@@ -27,6 +27,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
 import org.picketbox.core.config.ConfigurationBuilder;
+import org.picketbox.core.identity.jpa.EntityManagerLookupStrategy;
+import org.picketbox.core.identity.jpa.EntityManagerPropagationContext;
 
 /**
  * Configuration Builder
@@ -42,7 +44,10 @@ public class AuthenticationConfigurationBuilder {
     public ConfigurationBuilder configure(){
         ConfigurationBuilder builder = new ConfigurationBuilder(); 
 
-        builder.identityManager().jpaStore().setEntityManager(entityManager);//JPA Store
+        EntityManagerLookupStrategy strategy = new EntityManagerLookupStrategy();
+        EntityManagerPropagationContext.set(entityManager);
+        
+        builder.identityManager().jpaStore().entityManagerLookupStrategy(strategy);//JPA Store
         builder.sessionManager().inMemorySessionStore();
 
         /*IDMSetup idmSetup = new IDMSetup();

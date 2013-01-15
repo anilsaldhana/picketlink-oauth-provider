@@ -21,7 +21,7 @@
  */
 package org.picketlink.oauth.provider.services;
 
-import java.util.UUID;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -29,10 +29,10 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.picketbox.core.PicketBoxManager;
@@ -41,21 +41,21 @@ import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.SimpleAgent;
+import org.picketlink.idm.model.IdentityType;
 import org.picketlink.idm.model.User;
-import org.picketlink.oauth.provider.model.ApplicationRegistrationRequest;
-import org.picketlink.oauth.provider.model.ApplicationRegistrationResponse;
-
+import org.picketlink.idm.query.IdentityQuery;
+import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
 
 /**
- * Endpoint for registering OAuth Applications
+ * Endpoint for list of Oauth Applications registered
  * @author anil saldhana
- * @since Jan 9, 2013
+ * @since Jan 14, 2013
  */
 @Stateless
-@Path("/appregister")
+@Path("/appdetail")
 @TransactionAttribute
-public class ApplicationRegistrationEndpoint {
+public class ApplicationDetailEndpoint {
+
     @Inject
     private PicketBoxIdentity identity;
     @Inject 
@@ -65,55 +65,51 @@ public class ApplicationRegistrationEndpoint {
 
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private EntityManager entityManager;
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+   
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ApplicationRegistrationResponse register(ApplicationRegistrationRequest request){
-        ApplicationRegistrationResponse response = new ApplicationRegistrationResponse();
+    public ApplicationDetailResponse register(@QueryParam("app") String appid){
+        ApplicationDetailResponse response = new ApplicationDetailResponse();
 
-        if(!identity.isLoggedIn()){ 
-            response.setRegistered(false);
-            response.setErrorMessage("User Not Authenticated!"); 
-        }
+        if(identity.isLoggedIn()){
 
-        String appName = request.getAppName().trim();
-        String appURL = request.getAppURL();
+            User user = identity.getUser();
+            String identityID = user.getId();
 
-        EntityManagerPropagationContext.set(entityManager);
-        identityManager = picketboxManager.getIdentityManager();
-        
-        User user = identity.getUser();
-
-        if(existsAgent(appName)){
-            response.setRegistered(false);
-            response.setErrorMessage("Application Already Registered");
-        } else {
-            Agent oauthApp = createAgent(appName); 
-            oauthApp.setAttribute( new Attribute<String>("appURL", appURL) );
-            oauthApp.setAttribute( new Attribute<String>("owner", user.getId()) );
+            EntityManagerPropagationContext.set(entityManager);
             
-            oauthApp.setAttribute( new Attribute<String>("clientID", getUID()) );
-            oauthApp.setAttribute( new Attribute<String>("clientSecret", getUID()) );
-            identityManager.update(oauthApp);
-            response.setRegistered(true);
+            identityManager = picketboxManager.getIdentityManager();
+
+
+            IdentityQuery<Agent> query = identityManager.createQuery(Agent.class);
+
+            query.setParameter(Agent.ID , appid);
+            query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
+
+            List<Agent> result = query.getResultList();
+            
+            if(result.size() > 0){
+                Agent agent = result.get(0);
+                response.setName(agent.getId());
+                Attribute<String> appURLAttribute = agent.getAttribute("appURL");
+                if(appURLAttribute != null){
+                    response.setUrl(appURLAttribute.getValue());   
+                }
+                
+                Attribute<String> clientIDAtt = agent.getAttribute("clientID");
+                if(clientIDAtt != null){
+                    response.setClientID(clientIDAtt.getValue());
+                }
+                
+                Attribute<String> clientSecretAtt = agent.getAttribute("clientSecret");
+                if(clientSecretAtt != null){
+                    response.setClientSecret(clientSecretAtt.getValue());
+                }
+            }
+
+            response.setToken(this.identity.getUserContext().getSession().getId().getId().toString()); 
         }
 
         return response;
-    }
-
-    private boolean existsAgent(String id){
-        Agent existingAgent = identityManager.getAgent(id);
-        return existingAgent != null;
-    }
-
-    private Agent createAgent(String id) {
-        Agent agent = new SimpleAgent(id);
-        identityManager.add(agent);
-        return identityManager.getAgent(id);
-    }
-    
-    private String getUID(){
-        return UUID.randomUUID().toString();
     }
 }

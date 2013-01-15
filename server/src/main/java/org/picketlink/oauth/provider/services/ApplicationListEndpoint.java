@@ -21,7 +21,8 @@
  */
 package org.picketlink.oauth.provider.services;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -35,27 +36,31 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.jboss.logging.Logger;
 import org.picketbox.core.PicketBoxManager;
 import org.picketbox.core.identity.jpa.EntityManagerPropagationContext;
 import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.SimpleAgent;
+import org.picketlink.idm.model.IdentityType;
 import org.picketlink.idm.model.User;
-import org.picketlink.oauth.provider.model.ApplicationRegistrationRequest;
-import org.picketlink.oauth.provider.model.ApplicationRegistrationResponse;
-
+import org.picketlink.idm.query.IdentityQuery;
+import org.picketlink.oauth.provider.model.ApplicationListRequest;
+import org.picketlink.oauth.provider.model.ApplicationListResponse;
+import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
 
 /**
- * Endpoint for registering OAuth Applications
+ * Endpoint for list of Oauth Applications registered
  * @author anil saldhana
- * @since Jan 9, 2013
+ * @since Jan 14, 2013
  */
 @Stateless
-@Path("/appregister")
+@Path("/applist")
 @TransactionAttribute
-public class ApplicationRegistrationEndpoint {
+public class ApplicationListEndpoint {
+    private Logger log = Logger.getLogger(ApplicationListEndpoint.class);
+
     @Inject
     private PicketBoxIdentity identity;
     @Inject 
@@ -65,55 +70,51 @@ public class ApplicationRegistrationEndpoint {
 
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private EntityManager entityManager;
-
+    
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ApplicationRegistrationResponse register(ApplicationRegistrationRequest request){
-        ApplicationRegistrationResponse response = new ApplicationRegistrationResponse();
+    public ApplicationListResponse register(ApplicationListRequest listRequest){
+        ApplicationListResponse response = new ApplicationListResponse();
+        String userID = listRequest.getUserId();
 
-        if(!identity.isLoggedIn()){ 
-            response.setRegistered(false);
-            response.setErrorMessage("User Not Authenticated!"); 
-        }
+        if(identity.isLoggedIn()){
 
-        String appName = request.getAppName().trim();
-        String appURL = request.getAppURL();
+            User user = identity.getUser();
+            String identityID = user.getId();
+            if(identityID.equals(userID) == false){
+                log.error("WRONG USER::" + userID + " :: Needed :" + identityID);
+            } 
 
-        EntityManagerPropagationContext.set(entityManager);
-        identityManager = picketboxManager.getIdentityManager();
-        
-        User user = identity.getUser();
+            EntityManagerPropagationContext.set(entityManager);
+            identityManager = picketboxManager.getIdentityManager();
 
-        if(existsAgent(appName)){
-            response.setRegistered(false);
-            response.setErrorMessage("Application Already Registered");
-        } else {
-            Agent oauthApp = createAgent(appName); 
-            oauthApp.setAttribute( new Attribute<String>("appURL", appURL) );
-            oauthApp.setAttribute( new Attribute<String>("owner", user.getId()) );
+
+            IdentityQuery<Agent> query = identityManager.createQuery(Agent.class);
+
+            query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
+
+            List<Agent> result = query.getResultList();
+            ArrayList<ApplicationDetailResponse> apps = new ArrayList<ApplicationDetailResponse>();
+
+            for(Agent agent: result){
+                ApplicationDetailResponse app = new ApplicationDetailResponse();
+                app.setName(agent.getId());
+                Attribute<String> appURLAttribute = agent.getAttribute("appURL");
+                if(appURLAttribute != null){
+                    app.setUrl(appURLAttribute.getValue());   
+                }
+                apps.add(app);
+            }
             
-            oauthApp.setAttribute( new Attribute<String>("clientID", getUID()) );
-            oauthApp.setAttribute( new Attribute<String>("clientSecret", getUID()) );
-            identityManager.update(oauthApp);
-            response.setRegistered(true);
+            ApplicationDetailResponse[] arr = new ApplicationDetailResponse[apps.size()];
+            
+            apps.toArray(arr);
+
+            response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
+            response.setApplications(arr);
         }
 
         return response;
-    }
-
-    private boolean existsAgent(String id){
-        Agent existingAgent = identityManager.getAgent(id);
-        return existingAgent != null;
-    }
-
-    private Agent createAgent(String id) {
-        Agent agent = new SimpleAgent(id);
-        identityManager.add(agent);
-        return identityManager.getAgent(id);
-    }
-    
-    private String getUID(){
-        return UUID.randomUUID().toString();
     }
 }

@@ -54,6 +54,7 @@ public class IDMSetupBean {
         if(picketboxManager == null){
             throw new RuntimeException("PicketBox Manager has not been injected");
         }
+        
         IdentityManager identityManager = picketboxManager.getIdentityManager();
         
         if(identityManager == null){

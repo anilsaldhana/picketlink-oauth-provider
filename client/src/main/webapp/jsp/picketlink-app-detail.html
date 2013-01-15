@@ -49,7 +49,7 @@
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="nav-header">Register</li>
-              <li class="active"><a href="#">Login</a></li>
+              <li class="active"><a id="logout-btn" href="#">Logout</a></li>
               <li><a href="#">Register</a></li>
               <li class="nav-header">Help</li>
               <li><a href="#">Quickstarts</a></li>
@@ -59,11 +59,13 @@
         <div class="span9">
           <div class="leaderboard">
             <h1>Application Detail</h1>
-              <table class="table">
+              <table id="app-detail-table" class="table table-striped">
+                <thead>  
                   <tr>  
                   </tr>  
                </thead>
-               <tbody>  
+               <tbody> 
+                <!-- 
                   <tr>  
                     <td>Application Name</td>  
                     <td>My App</td>  
@@ -80,6 +82,7 @@
                     <td>Client Secret</td>  
                     <td>somesecret</td>  
                   </tr>  
+                  -->
                </tbody>
               </table>
           </div>
@@ -108,6 +111,10 @@
     <script src="twitter-bootstrap-v2/docs/assets/js/bootstrap-collapse.js"></script>
     <script src="twitter-bootstrap-v2/docs/assets/js/bootstrap-carousel.js"></script>
     <script src="twitter-bootstrap-v2/docs/assets/js/bootstrap-typeahead.js"></script>
+    
+    
+    <script type="text/javascript" src="../js/oauthprovider.js"></script>
+    <script type="text/javascript" src="../js/security.js"></script>
 
   </body>
 </html>
