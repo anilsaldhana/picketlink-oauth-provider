@@ -80,8 +80,9 @@ $(document).ready(function() {
             success:function (data) {
             	window.location = getHost() + "/picketlink.html";
             },error:function(data) {
-                   alert('log out failed');
-                }
+                alert('Log out process did not complete.');
+               	window.location = getHost() + "/picketlink.html";
+            }
         });
 		return false; // prevents submit of the form
 	});
@@ -97,7 +98,7 @@ $(document).ready(function() {
 	        data:{},
 	        type:'GET', 
 	        success:function (data) { 
-                   $('#username-msg').text(data.fullName);
+                   $('#username-msg').text(data.userId);
 	        }
 	    });
 	}
