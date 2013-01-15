@@ -9,7 +9,7 @@
 		transaction-type="JTA">
 		<description>PicketLink Oauth Provider Persistence Unit</description>
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+		<jta-data-source>java:jboss/datasources/OAuthProviderDS</jta-data-source>
         
         <class>org.picketlink.idm.jpa.schema.IdentityObject</class>
         <class>org.picketlink.idm.jpa.schema.MembershipObject</class>
