@@ -95,3 +95,44 @@ $(document).ready(function() {
 	    });  
 	}
 });
+
+//Account Registration
+$(document).ready(function() {
+	if (!$('#register-here')) {
+		return;
+	}
+	
+	$('#register-btn').click(function() {		
+		var userName = $('#user_name').val();
+		
+		//First check if username already registered
+		var jqxhr0 = $.ajax('/picketlink-oauth-provider-server/accregister?id='+userName, {
+	        data:{},
+	        type:'GET', 
+	        success:function (data) {
+                if (data.registered) {
+                	//UserName already registered
+                	alert("User Already Registered");
+                }else {
+                	//UserName not already registered
+                	var jqxhr = $.ajax('/picketlink-oauth-provider-server/accregister', {
+            			contentType: "application/json",
+                        dataType:'json',
+                        data:JSON.stringify({userName:$('#user_name').val(),password:$('#password').val(),address:$('#address').val(),
+                        	firstName:$('#firstname').val(),lastName:$('#lastname').val(),email:$('#email').val(),
+                        	postalCode:$('#postalcode').val(),city:$('#city').val(),state:$('#state').val(),country:$('#country').val()}),
+                        type:'POST', 
+                        success:function (data) {
+                            if (data.registered) {
+                                window.location = getHost() + "/picketlink-login.html";
+                            } else { 
+                        	    alert('Registration failed');
+                            }
+                        }
+                    });
+                } 
+	        }
+	    });
+		return false; // prevents submit of the form
+	});
+});

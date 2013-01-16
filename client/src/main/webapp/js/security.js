@@ -31,9 +31,9 @@ $.ajaxSetup({
 	},
 	error : function(xhr, textStatus, errorThrown) {
 		if (window.location.pathname.indexOf("picketlink-login.html", 0) == -1) {
-			if (window.location.pathname.indexOf("error.html", 0) == -1) {
+			if (window.location.pathname.indexOf("picketlink.html", 0) == -1) {
 				if (xhr.status == 500 || xhr.status == 403) {
-					window.location = getHost() + "/error.html";
+					window.location = getHost() + "/picketlink.html";
 					return;
 				}
 			}
@@ -97,8 +97,13 @@ $(document).ready(function() {
 		var jqxhr = $.ajax('/picketlink-oauth-provider-server/userinfo', {
 	        data:{},
 	        type:'GET', 
-	        success:function (data) { 
-                   $('#username-msg').text(data.userId);
+	        success:function (data) {
+	        	   if(data.userId == null || data.userId.length == 0){
+	        		   //User Not Logged In
+	        			window.location = getHost() + "/picketlink-login.html";
+	        	   } else {
+	                   $('#username-msg').text(data.userId);
+	        	   }
 	        }
 	    });
 	}
@@ -114,7 +119,7 @@ function sendMainPage() {
 
 $(document).ready(function() {
 	$('#signup-btn').click(function() {
-		window.location = getHost() + "/register.html";
+		window.location = getHost() + "/picketlink-accnt-reg.html";
 		return false; // prevents submit of the form
 	});
 });
