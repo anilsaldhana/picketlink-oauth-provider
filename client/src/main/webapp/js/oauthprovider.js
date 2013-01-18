@@ -13,7 +13,7 @@ $(document).ready(function() {
                 if (data.registered) {
                     window.location = getHost() + "/picketlink-apps-list.html";
                 } else { 
-            	    alert('Registration failed');
+            	    alert('Registration failed:'+data.errorMessage);
                 }
             }
         });

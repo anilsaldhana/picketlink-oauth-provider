@@ -81,16 +81,16 @@ public class ApplicationDetailEndpoint {
             identityManager = picketboxManager.getIdentityManager();
 
 
-            IdentityQuery<Agent> query = identityManager.createQuery(Agent.class);
+            IdentityQuery<Agent> query = identityManager.createIdentityQuery(Agent.class);
 
-            query.setParameter(Agent.ID , appid);
+            query.setParameter(Agent.LOGIN_NAME, appid);
             query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
 
             List<Agent> result = query.getResultList();
             
             if(result.size() > 0){
                 Agent agent = result.get(0);
-                response.setName(agent.getId());
+                response.setName(agent.getLoginName());
                 Attribute<String> appURLAttribute = agent.getAttribute("appURL");
                 if(appURLAttribute != null){
                     response.setUrl(appURLAttribute.getValue());   
@@ -110,6 +110,7 @@ public class ApplicationDetailEndpoint {
             response.setToken(this.identity.getUserContext().getSession().getId().getId().toString()); 
         }
 
+        EntityManagerPropagationContext.clear();
         return response;
     }
 }

@@ -97,8 +97,9 @@ public class ApplicationRegistrationEndpoint {
             oauthApp.setAttribute( new Attribute<String>("clientSecret", getUID()) );
             identityManager.update(oauthApp);
             response.setRegistered(true);
-        }
+        } 
 
+        EntityManagerPropagationContext.clear();
         return response;
     }
 

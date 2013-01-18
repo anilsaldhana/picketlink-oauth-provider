@@ -87,10 +87,9 @@ public class ApplicationListEndpoint {
             } 
 
             EntityManagerPropagationContext.set(entityManager);
-            identityManager = picketboxManager.getIdentityManager();
+            identityManager = picketboxManager.getIdentityManager(); 
 
-
-            IdentityQuery<Agent> query = identityManager.createQuery(Agent.class);
+            IdentityQuery<Agent> query = identityManager.createIdentityQuery(Agent.class);
 
             query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
 
@@ -99,7 +98,7 @@ public class ApplicationListEndpoint {
 
             for(Agent agent: result){
                 ApplicationDetailResponse app = new ApplicationDetailResponse();
-                app.setName(agent.getId());
+                app.setName(agent.getLoginName());
                 Attribute<String> appURLAttribute = agent.getAttribute("appURL");
                 if(appURLAttribute != null){
                     app.setUrl(appURLAttribute.getValue());   
@@ -115,6 +114,7 @@ public class ApplicationListEndpoint {
             response.setApplications(arr);
         }
 
+        EntityManagerPropagationContext.clear();
         return response;
     }
 }

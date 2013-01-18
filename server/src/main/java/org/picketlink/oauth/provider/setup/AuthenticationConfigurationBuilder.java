@@ -48,10 +48,7 @@ public class AuthenticationConfigurationBuilder {
         EntityManagerPropagationContext.set(entityManager);
         
         builder.identityManager().jpaStore().entityManagerLookupStrategy(strategy);//JPA Store
-        builder.sessionManager().inMemorySessionStore();
-
-        /*IDMSetup idmSetup = new IDMSetup();
-        idmSetup.initialize();*/
+        builder.sessionManager().inMemorySessionStore(); 
         
         return builder;
     }
