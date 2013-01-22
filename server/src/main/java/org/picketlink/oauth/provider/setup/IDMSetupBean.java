@@ -32,7 +32,7 @@ import javax.inject.Inject;
 import org.jboss.logging.Logger;
 import org.picketbox.core.PicketBoxManager;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.credential.internal.Password;
 import org.picketlink.idm.model.SimpleUser;
 import org.picketlink.idm.model.User;
 
