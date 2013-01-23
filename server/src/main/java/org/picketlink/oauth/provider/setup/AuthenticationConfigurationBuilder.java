@@ -22,13 +22,10 @@
 package org.picketlink.oauth.provider.setup;
 
 import javax.enterprise.inject.Produces;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
+import javax.inject.Inject;
 
 import org.picketbox.core.config.ConfigurationBuilder;
 import org.picketbox.core.identity.jpa.EntityManagerLookupStrategy;
-import org.picketbox.core.identity.jpa.EntityManagerPropagationContext;
 
 /**
  * Configuration Builder
@@ -36,18 +33,20 @@ import org.picketbox.core.identity.jpa.EntityManagerPropagationContext;
  * @since Jan 8, 2013
  */
 public class AuthenticationConfigurationBuilder {
-
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
-    private EntityManager entityManager;
+    /**
+     * <p>
+     * Injects a {@link JPATemplate} that should be used to execute IDM operations. PicketLink Extensions provides a default
+     * implementation called {@link DefaultJPATemplate}.
+     * </p>
+     */
+    @Inject
+    private EntityManagerLookupStrategy entityManagerLookupStrategy;
     
     @Produces
     public ConfigurationBuilder configure(){
-        ConfigurationBuilder builder = new ConfigurationBuilder(); 
-
-        EntityManagerLookupStrategy strategy = new EntityManagerLookupStrategy();
-        EntityManagerPropagationContext.set(entityManager);
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         
-        builder.identityManager().jpaStore().entityManagerLookupStrategy(strategy);//JPA Store
+        builder.identityManager().jpaStore().entityManagerLookupStrategy(entityManagerLookupStrategy);//JPA Store
         builder.sessionManager().inMemorySessionStore(); 
         
         return builder;

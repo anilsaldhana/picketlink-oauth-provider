@@ -30,7 +30,6 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 
 import org.jboss.logging.Logger;
-import org.picketbox.core.PicketBoxManager;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.internal.Password;
 import org.picketlink.idm.model.SimpleUser;
@@ -46,17 +45,11 @@ import org.picketlink.idm.model.User;
 public class IDMSetupBean { 
     private Logger log = Logger.getLogger(IDMSetupBean.class);
     
-    @Inject 
-    PicketBoxManager picketboxManager;
+    @Inject
+    IdentityManager identityManager;
     
     @PostConstruct
     public void initialize(){
-        if(picketboxManager == null){
-            throw new RuntimeException("PicketBox Manager has not been injected");
-        }
-        
-        IdentityManager identityManager = picketboxManager.getIdentityManager();
-        
         if(identityManager == null){
             throw new RuntimeException("Identity Manager has not been injected");
         }
@@ -74,9 +67,13 @@ public class IDMSetupBean {
             
             identityManager.updateCredential(admin, new Password("admin123".toCharArray()), new Date(), calendar.getTime());
 
-            log.debug("ADMIN user INJECTED!!!");
+            if(log.isDebugEnabled()){
+                log.debug("User admin has been inserted into the identity store");
+            }
         } else{
-            log.debug("ADMIN user EXISTS!!!!");
+            if(log.isDebugEnabled()){
+                log.debug("User admin already exists in the identity store");
+            }
         }
     }
 }
