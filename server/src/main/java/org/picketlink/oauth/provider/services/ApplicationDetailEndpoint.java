@@ -26,18 +26,14 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.picketbox.core.PicketBoxManager;
-import org.picketbox.core.identity.jpa.EntityManagerPropagationContext;
 import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
+import org.picketlink.extensions.core.pbox.authorization.UserLoggedIn;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
@@ -48,6 +44,7 @@ import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
 
 /**
  * Endpoint for list of Oauth Applications registered
+ * 
  * @author anil saldhana
  * @since Jan 14, 2013
  */
@@ -58,59 +55,47 @@ public class ApplicationDetailEndpoint {
 
     @Inject
     private PicketBoxIdentity identity;
-    @Inject 
-    private PicketBoxManager picketboxManager;
 
+    @Inject
     private IdentityManager identityManager;
 
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
-    private EntityManager entityManager;
-   
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ApplicationDetailResponse register(@QueryParam("app") String appid){
+    @UserLoggedIn
+    public ApplicationDetailResponse register(@QueryParam("app") String appid) {
         ApplicationDetailResponse response = new ApplicationDetailResponse();
 
-        if(identity.isLoggedIn()){
+        User user = identity.getUser();
+        String identityID = user.getId();
 
-            User user = identity.getUser();
-            String identityID = user.getId();
+        IdentityQuery<Agent> query = identityManager.createIdentityQuery(Agent.class);
 
-            EntityManagerPropagationContext.set(entityManager);
-            
-            identityManager = picketboxManager.getIdentityManager();
+        query.setParameter(Agent.LOGIN_NAME, appid);
+        query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
 
+        List<Agent> result = query.getResultList();
 
-            IdentityQuery<Agent> query = identityManager.createIdentityQuery(Agent.class);
-
-            query.setParameter(Agent.LOGIN_NAME, appid);
-            query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
-
-            List<Agent> result = query.getResultList();
-            
-            if(result.size() > 0){
-                Agent agent = result.get(0);
-                response.setName(agent.getLoginName());
-                Attribute<String> appURLAttribute = agent.getAttribute("appURL");
-                if(appURLAttribute != null){
-                    response.setUrl(appURLAttribute.getValue());   
-                }
-                
-                Attribute<String> clientIDAtt = agent.getAttribute("clientID");
-                if(clientIDAtt != null){
-                    response.setClientID(clientIDAtt.getValue());
-                }
-                
-                Attribute<String> clientSecretAtt = agent.getAttribute("clientSecret");
-                if(clientSecretAtt != null){
-                    response.setClientSecret(clientSecretAtt.getValue());
-                }
+        if (result.size() > 0) {
+            Agent agent = result.get(0);
+            response.setName(agent.getLoginName());
+            Attribute<String> appURLAttribute = agent.getAttribute("appURL");
+            if (appURLAttribute != null) {
+                response.setUrl(appURLAttribute.getValue());
             }
 
-            response.setToken(this.identity.getUserContext().getSession().getId().getId().toString()); 
+            Attribute<String> clientIDAtt = agent.getAttribute("clientID");
+            if (clientIDAtt != null) {
+                response.setClientID(clientIDAtt.getValue());
+            }
+
+            Attribute<String> clientSecretAtt = agent.getAttribute("clientSecret");
+            if (clientSecretAtt != null) {
+                response.setClientSecret(clientSecretAtt.getValue());
+            }
         }
 
-        EntityManagerPropagationContext.clear();
+        response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
+
         return response;
     }
 }

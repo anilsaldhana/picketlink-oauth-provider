@@ -106,8 +106,8 @@ $(document).ready(function() {
 		var userName = $('#user_name').val();
 		
 		//First check if username already registered
-		var jqxhr0 = $.ajax('/picketlink-oauth-provider-server/accregister?id='+userName, {
-	        data:{},
+		var jqxhr0 = $.ajax('/picketlink-oauth-provider-server/alreadyExists', {
+	        data:'id=' + userName,
 	        type:'GET', 
 	        success:function (data) {
                 if (data.registered) {
@@ -131,6 +131,9 @@ $(document).ready(function() {
                         }
                     });
                 } 
+	        },
+	        error: function (xhr, ajaxOptions, thrownError) {
+	        	alert(thrownError);
 	        }
 	    });
 		return false; // prevents submit of the form

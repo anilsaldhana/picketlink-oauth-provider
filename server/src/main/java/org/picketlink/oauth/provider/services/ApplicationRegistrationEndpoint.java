@@ -26,18 +26,14 @@ import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.picketbox.core.PicketBoxManager;
-import org.picketbox.core.identity.jpa.EntityManagerPropagationContext;
 import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
+import org.picketlink.extensions.core.pbox.authorization.UserLoggedIn;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
@@ -56,33 +52,23 @@ import org.picketlink.oauth.provider.model.ApplicationRegistrationResponse;
 @Path("/appregister")
 @TransactionAttribute
 public class ApplicationRegistrationEndpoint {
+    
     @Inject
     private PicketBoxIdentity identity;
-    @Inject 
-    private PicketBoxManager picketboxManager;
 
+    @Inject
     private IdentityManager identityManager;
-
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
-    private EntityManager entityManager;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @UserLoggedIn
     public ApplicationRegistrationResponse register(ApplicationRegistrationRequest request){
         ApplicationRegistrationResponse response = new ApplicationRegistrationResponse();
-
-        if(!identity.isLoggedIn()){ 
-            response.setRegistered(false);
-            response.setErrorMessage("User Not Authenticated!"); 
-        }
 
         String appName = request.getAppName().trim();
         String appURL = request.getAppURL();
 
-        EntityManagerPropagationContext.set(entityManager);
-        identityManager = picketboxManager.getIdentityManager();
-        
         User user = identity.getUser();
 
         if(existsAgent(appName)){
@@ -99,7 +85,6 @@ public class ApplicationRegistrationEndpoint {
             response.setRegistered(true);
         } 
 
-        EntityManagerPropagationContext.clear();
         return response;
     }
 
