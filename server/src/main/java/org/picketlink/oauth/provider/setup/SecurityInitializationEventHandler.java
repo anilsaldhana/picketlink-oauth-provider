@@ -22,9 +22,6 @@
 
 package org.picketlink.oauth.provider.setup;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -49,10 +46,6 @@ public class SecurityInitializationEventHandler {
     public void onInitialized(@Observes InitializedEvent event) {
         IdentityManager identityManager = event.getPicketBoxManager().getIdentityManager();
 
-        if (identityManager == null) {
-            throw new RuntimeException("Identity Manager has not been injected");
-        }
-
         User admin = identityManager.getUser("admin");
         
         if (admin == null) {
@@ -63,10 +56,10 @@ public class SecurityInitializationEventHandler {
 
             identityManager.add(admin);
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.YEAR, 100);
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.add(Calendar.YEAR, 100);
 
-            identityManager.updateCredential(admin, new Password("admin123".toCharArray()), new Date(), calendar.getTime());
+            identityManager.updateCredential(admin, new Password("admin123"));
 
             if (logger.isDebugEnabled()) {
                 logger.debug("User admin has been inserted into the identity store");
