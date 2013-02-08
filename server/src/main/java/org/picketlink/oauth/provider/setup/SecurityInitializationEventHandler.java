@@ -27,7 +27,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.logging.Logger;
-import org.picketbox.core.InitializedEvent;
+import org.picketbox.core.event.InitializedEvent;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.internal.Password;
 import org.picketlink.idm.model.SimpleUser;
