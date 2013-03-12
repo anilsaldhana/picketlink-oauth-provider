@@ -19,36 +19,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.oauth.provider.setup;
-
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-
-import org.picketbox.core.config.ConfigurationBuilder;
-import org.picketbox.core.identity.jpa.EntityManagerLookupStrategy;
 
 /**
- * Configuration Builder
  * @author anil saldhana
- * @since Jan 8, 2013
+ * @since Mar 12, 2013
+ *
  */
-public class AuthenticationConfigurationBuilder {
-    /**
-     * <p>
-     * Injects a {@link JPATemplate} that should be used to execute IDM operations. PicketLink Extensions provides a default
-     * implementation called {@link DefaultJPATemplate}.
-     * </p>
-     */
-    @Inject
-    private EntityManagerLookupStrategy entityManagerLookupStrategy;
-    
-    @Produces
-    public ConfigurationBuilder configure(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-        
-        builder.identityManager().jpaStore().entityManagerLookupStrategy(entityManagerLookupStrategy);//JPA Store
-        builder.sessionManager().inMemorySessionStore(); 
-        
-        return builder;
-    }
-}
+package org.picketlink.oauth.provider.rest.interceptors;

@@ -32,8 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
-import org.picketlink.extensions.core.pbox.authorization.UserLoggedIn;
+import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
@@ -41,6 +40,7 @@ import org.picketlink.idm.model.IdentityType;
 import org.picketlink.idm.model.User;
 import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
+import org.picketlink.oauth.provider.security.UserLoggedIn;
 
 /**
  * Endpoint for list of Oauth Applications registered
@@ -54,11 +54,11 @@ import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
 public class ApplicationDetailEndpoint {
 
     @Inject
-    private PicketBoxIdentity identity;
+    private Identity identity;
 
     @Inject
     private IdentityManager identityManager;
-
+     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedIn
@@ -94,7 +94,8 @@ public class ApplicationDetailEndpoint {
             }
         }
 
-        response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
+        response.setToken(user.getId());
+        //response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
 
         return response;
     }

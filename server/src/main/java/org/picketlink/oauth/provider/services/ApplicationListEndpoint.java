@@ -27,15 +27,16 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.logging.Logger;
-import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
-import org.picketlink.extensions.core.pbox.authorization.UserLoggedIn;
+import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
@@ -45,6 +46,7 @@ import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
 import org.picketlink.oauth.provider.model.ApplicationListRequest;
 import org.picketlink.oauth.provider.model.ApplicationListResponse;
+import org.picketlink.oauth.provider.security.UserLoggedIn;
 
 /**
  * Endpoint for list of Oauth Applications registered
@@ -61,7 +63,7 @@ public class ApplicationListEndpoint {
     private Logger log;
 
     @Inject
-    private PicketBoxIdentity identity;
+    private Identity identity;
 
     @Inject
     private IdentityManager identityManager;
@@ -101,7 +103,8 @@ public class ApplicationListEndpoint {
 
         apps.toArray(arr);
 
-        response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
+        response.setToken(user.getId());
+        //response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
         response.setApplications(arr);
 
         return response;

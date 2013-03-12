@@ -61,8 +61,13 @@
    <dependencies>
 
       <dependency>
-          <groupId>org.picketlink.extensions</groupId>
-          <artifactId>picketlink-extensions-core</artifactId>
+          <groupId>org.picketlink</groupId>
+          <artifactId>picketlink-core-impl</artifactId>
+          <version>3.0.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>org.picketlink</groupId>
+          <artifactId>picketlink-idm-schema</artifactId>
           <version>3.0.0-SNAPSHOT</version>
       </dependency>
 

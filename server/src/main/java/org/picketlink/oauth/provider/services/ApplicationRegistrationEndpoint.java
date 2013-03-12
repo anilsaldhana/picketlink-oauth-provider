@@ -31,9 +31,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.picketlink.extensions.core.pbox.PicketBoxIdentity;
-import org.picketlink.extensions.core.pbox.authorization.UserLoggedIn;
+ 
+import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Agent;
 import org.picketlink.idm.model.Attribute;
@@ -41,6 +40,7 @@ import org.picketlink.idm.model.SimpleAgent;
 import org.picketlink.idm.model.User;
 import org.picketlink.oauth.provider.model.ApplicationRegistrationRequest;
 import org.picketlink.oauth.provider.model.ApplicationRegistrationResponse;
+import org.picketlink.oauth.provider.security.UserLoggedIn;
 
 
 /**
@@ -54,7 +54,7 @@ import org.picketlink.oauth.provider.model.ApplicationRegistrationResponse;
 public class ApplicationRegistrationEndpoint {
     
     @Inject
-    private PicketBoxIdentity identity;
+    private Identity identity;
 
     @Inject
     private IdentityManager identityManager;

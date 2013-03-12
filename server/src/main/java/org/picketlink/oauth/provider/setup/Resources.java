@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.jboss.logging.Logger;
+import org.picketlink.annotations.PicketLink;
 
 /**
  * <p>
@@ -30,7 +31,8 @@ import org.jboss.logging.Logger;
  */
 public class Resources {
     @Produces
-    @PersistenceContext
+    @PicketLink
+    @PersistenceContext(unitName = "picketlink-oauth-provider")
     private EntityManager em;
 
     @Produces
