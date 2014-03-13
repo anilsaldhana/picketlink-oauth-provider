@@ -26,11 +26,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.picketlink.Identity;
-import org.picketlink.idm.model.User;
+import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.basic.User;
 
 /**
  * <p>JAX-RS Endpoint to authenticate users.</p>
- * 
+ *
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
@@ -39,35 +40,37 @@ import org.picketlink.idm.model.User;
 public class UserInfoEndpoint {
 
     @Inject
-    //private PicketBoxIdentity identity;
     private Identity identity;
-    
+
     @GET
     @Produces (MediaType.APPLICATION_JSON)
     public UserInfo getInfo() {
         UserInfo userInfo = new UserInfo();
-        
-        if (identity.isLoggedIn()) {            
-            User user = this.identity.getUser();
+
+        if (identity.isLoggedIn()) {
+            Account account = identity.getAccount();
+
+            User user = (User) account;
+            //User user = this.identity.getUser();
             userInfo.setUserId(user.getLoginName());
             userInfo.setFullName(user.getFirstName() + " " + user.getLastName());
-            
+
            /* UserContext userContext = this.identity.getUserContext();
-            
+
             Collection<Role> roles = userContext.getRoles();
             String[] rolesArray = new String[roles.size()];
-            
+
             int i = 0;
-            
+
             for (Role role : roles) {
                 rolesArray[i] = role.getName();
                 i++;
             }
-            
+
             userInfo.setRoles(rolesArray);*/
         }
-        
+
         return userInfo;
     }
-    
+
 }

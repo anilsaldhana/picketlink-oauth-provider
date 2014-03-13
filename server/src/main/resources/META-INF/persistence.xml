@@ -4,22 +4,22 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	version="2.0"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-	<persistence-unit
-		name="picketlink-oauth-provider"
+	<persistence-unit name="picketlink-oauth-provider"
 		transaction-type="JTA">
 		<description>PicketLink Oauth Provider Persistence Unit</description>
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<jta-data-source>java:jboss/datasources/OAuthProviderDS</jta-data-source>
-        
-        <class>org.picketlink.idm.jpa.schema.IdentityObject</class>
-        <class>org.picketlink.idm.jpa.schema.IdentityObjectAttribute</class>
-        <class>org.picketlink.idm.jpa.schema.CredentialObject</class>
-        <class>org.picketlink.idm.jpa.schema.CredentialObjectAttribute</class>
-        <class>org.picketlink.idm.jpa.schema.PartitionObject</class>
-        <class>org.picketlink.idm.jpa.schema.RelationshipObject</class>
-        <class>org.picketlink.idm.jpa.schema.RelationshipIdentityObject</class>
-        
-		
+
+        <class>org.picketlink.idm.jpa.model.sample.simple.AttributedTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.AccountTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.RoleTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.IdentityTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.RelationshipTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.RelationshipIdentityTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.PartitionTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.PasswordCredentialTypeEntity</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.AttributeTypeEntity</class>
+
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property

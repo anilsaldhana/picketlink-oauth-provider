@@ -34,10 +34,12 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.logging.Logger;
 import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.model.Agent;
+import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.Attribute;
+import org.picketlink.idm.model.AttributedType;
 import org.picketlink.idm.model.IdentityType;
-import org.picketlink.idm.model.User;
+import org.picketlink.idm.model.basic.Agent;
+import org.picketlink.idm.model.basic.User;
 import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.oauth.provider.model.ApplicationDetailResponse;
 import org.picketlink.oauth.provider.model.ApplicationListRequest;
@@ -46,7 +48,7 @@ import org.picketlink.oauth.provider.security.UserLoggedIn;
 
 /**
  * Endpoint for list of Oauth Applications registered
- * 
+ *
  * @author anil saldhana
  * @since Jan 14, 2013
  */
@@ -72,15 +74,18 @@ public class ApplicationListEndpoint {
         ApplicationListResponse response = new ApplicationListResponse();
         String userID = listRequest.getUserId();
 
-        User user = identity.getUser();
-        String identityID = user.getId();
+        User user = (User) identity.getAccount();
+        String identityID = user.getLoginName();
+
+        //User user = identity.getUser();
+        //String identityID = user.getId();
         if (identityID.equals(userID) == false) {
             log.error("WRONG USER::" + userID + " :: Needed :" + identityID);
         }
 
         IdentityQuery<Agent> query = identityManager.createIdentityQuery(Agent.class);
 
-        query.setParameter(IdentityType.ATTRIBUTE.byName("owner"), new String[] { identityID });
+        query.setParameter(IdentityType.QUERY_ATTRIBUTE.byName("owner"), new String[] { identityID });
 
         List<Agent> result = query.getResultList();
         ArrayList<ApplicationDetailResponse> apps = new ArrayList<ApplicationDetailResponse>();
@@ -99,7 +104,7 @@ public class ApplicationListEndpoint {
 
         apps.toArray(arr);
 
-        response.setToken(user.getId());
+        response.setToken(identityID);
         //response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
         response.setApplications(arr);
 

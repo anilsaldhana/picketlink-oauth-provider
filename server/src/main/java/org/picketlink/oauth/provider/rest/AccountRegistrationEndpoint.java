@@ -24,18 +24,18 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
- 
+
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.SimpleUser;
-import org.picketlink.idm.model.User;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.User;
 import org.picketlink.oauth.provider.model.AccountRegistrationRequest;
 import org.picketlink.oauth.provider.model.AccountRegistrationResponse;
 
 /**
  * Endpoint for User Account Registration
- * 
+ *
  * @author anil saldhana
  * @since Jan 16, 2013
  */
@@ -48,7 +48,7 @@ public class AccountRegistrationEndpoint {
 
     /**
      * Register an user account
-     * 
+     *
      * @param request
      * @return
      */
@@ -59,10 +59,10 @@ public class AccountRegistrationEndpoint {
         AccountRegistrationResponse response = new AccountRegistrationResponse();
 
         String userName = request.getUserName();
-
-        if (this.identityManager.getUser(userName) == null) {
+        User user = BasicModel.getUser(identityManager, userName);
+        if (user == null) {
             // UserName is not already registered
-            User user = new SimpleUser(userName);
+            user = new User(userName);
             user.setEmail(request.getEmail());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
@@ -75,13 +75,13 @@ public class AccountRegistrationEndpoint {
 
             this.identityManager.add(user);
             this.identityManager.updateCredential(user, new Password(request.getPassword()));
-            
+
             response.setStatus("Registered");
             response.setRegistered(true);
         } else {
             response.setStatus("UserName already taken. Choose another name!");
         }
-        
+
         return response;
     }
 }

@@ -24,57 +24,78 @@
       </license>
    </licenses>
    <properties>
-      <!-- Explicitly declaring the source encoding eliminates the following 
+      <!-- Explicitly declaring the source encoding eliminates the following
          message: -->
-      <!-- [WARNING] Using platform encoding (UTF-8 actually) to copy filtered 
+      <!-- [WARNING] Using platform encoding (UTF-8 actually) to copy filtered
          resources, i.e. build is platform dependent! -->
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <!-- Timestamp format for the maven.build.timestamp property -->
-      <!-- You can reference property in pom.xml or filtered resources (must 
+      <!-- You can reference property in pom.xml or filtered resources (must
          enable third-party plugin if using Maven < 2.1) -->
       <javaee6.spec.version>3.0.0.Beta1</javaee6.spec.version>
-      <!-- Alternatively, comment out the above line, and un-comment the line 
-         below to use version 3.0.0.Beta1-redhat-1 which is a release certified to 
-         work with JBoss EAP 6. It requires you have access to the JBoss EAP 6 maven 
+      <!-- Alternatively, comment out the above line, and un-comment the line
+         below to use version 3.0.0.Beta1-redhat-1 which is a release certified to
+         work with JBoss EAP 6. It requires you have access to the JBoss EAP 6 maven
          repository. -->
       <!-- <javaee6.spec.version>3.0.0.Beta1-redhat-1</javaee6.spec.version> -->
       <jboss.logging.version>3.1.0.GA</jboss.logging.version>
+       <!-- PicketLink dependency versions -->
+       <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
    </properties>
    <dependencyManagement>
-
-      <dependencies>
-         <!-- JBoss distributes a complete set of Java EE 6 APIs including a Bill 
-            of Materials (BOM). A BOM specifies the versions of a "stack" (or a collection) 
-            of artifacts. We use this here so that we always get the correct versions 
-            of artifacts. Here we use the jboss-javaee-6.0 stack (you can read this as 
-            the JBoss stack of the Java EE 6 APIs) -->
-         <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-6.0</artifactId>
-            <version>${javaee6.spec.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-      </dependencies>
+       <dependencies>
+           <!-- Dependency Management for PicketLink and Java EE 6.0. -->
+           <dependency>
+               <groupId>org.picketlink</groupId>
+               <artifactId>picketlink-javaee-6.0-with-deltaspike</artifactId>
+               <version>${version.picketlink.javaee.bom}</version>
+               <scope>import</scope>
+               <type>pom</type>
+           </dependency>
+       </dependencies>
    </dependencyManagement>
 
    <dependencies>
 
-      <dependency>
-          <groupId>org.picketlink</groupId>
-          <artifactId>picketlink-core-impl</artifactId>
-          <version>3.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-          <groupId>org.picketlink</groupId>
-          <artifactId>picketlink-idm-schema</artifactId>
-          <version>3.0.0-SNAPSHOT</version>
-      </dependency>
+       <!-- Import the PicketLink API, we deploy this as library with the application,
+   and can compile against it -->
+       <dependency>
+           <groupId>org.picketlink</groupId>
+           <artifactId>picketlink-api</artifactId>
+       </dependency>
 
-      <!-- First declare the APIs we depend on and need for compilation. All 
+       <!-- Import the PicketLink implementation, we deploy this as library with the application,
+   but can't compile against it -->
+       <dependency>
+           <groupId>org.picketlink</groupId>
+           <artifactId>picketlink-impl</artifactId>
+       </dependency>
+
+       <!-- Import the PicketLink IDM API, we deploy this as library with the application,
+   and can compile against it -->
+       <dependency>
+           <groupId>org.picketlink</groupId>
+           <artifactId>picketlink-idm-api</artifactId>
+       </dependency>
+
+       <!-- Import the PicketLink IDM API, we deploy this as library with the application,
+   and can compile against it -->
+       <dependency>
+           <groupId>org.picketlink</groupId>
+           <artifactId>picketlink-idm-impl</artifactId>
+       </dependency>
+
+       <!-- Import the PicketLink IDM Simple Schema, which provides some built-in JPA entities for
+   the sample model -->
+       <dependency>
+           <groupId>org.picketlink</groupId>
+           <artifactId>picketlink-idm-simple-schema</artifactId>
+       </dependency>
+
+      <!-- First declare the APIs we depend on and need for compilation. All
          of them are provided by JBoss -->
 
-      <!-- Import the CDI API, we use provided scope as the API is included in 
+      <!-- Import the CDI API, we use provided scope as the API is included in
          JBoss -->
       <dependency>
          <groupId>javax.enterprise</groupId>
@@ -82,7 +103,7 @@
          <scope>provided</scope>
       </dependency>
 
-      <!-- Import the Common Annotations API (JSR-250), we use provided scope 
+      <!-- Import the Common Annotations API (JSR-250), we use provided scope
          as the API is included in JBoss -->
       <dependency>
          <groupId>org.jboss.spec.javax.annotation</groupId>
@@ -90,7 +111,7 @@
          <scope>provided</scope>
       </dependency>
 
-      <!-- Import the JAX-RS API, we use provided scope as the API is included 
+      <!-- Import the JAX-RS API, we use provided scope as the API is included
          in JBoss -->
       <dependency>
          <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -98,7 +119,7 @@
          <scope>provided</scope>
       </dependency>
 
-      <!-- Import the JPA API, we use provided scope as the API is included in 
+      <!-- Import the JPA API, we use provided scope as the API is included in
          JBoss -->
       <dependency>
          <groupId>org.hibernate.javax.persistence</groupId>
@@ -106,7 +127,7 @@
          <scope>provided</scope>
       </dependency>
 
-      <!-- Import the EJB API, we use provided scope as the API is included in 
+      <!-- Import the EJB API, we use provided scope as the API is included in
          JBoss -->
       <dependency>
          <groupId>org.jboss.spec.javax.ejb</groupId>
@@ -132,7 +153,7 @@
 
       <!-- Now we declare any tools needed -->
 
-      <!-- Annotation processor to generate the JPA 2.0 metamodel classes for 
+      <!-- Annotation processor to generate the JPA 2.0 metamodel classes for
          typesafe criteria queries -->
       <dependency>
          <groupId>org.hibernate</groupId>
@@ -157,7 +178,7 @@
       </dependency>
 
       <!-- Optional, but highly recommended -->
-      <!-- Arquillian allows you to test enterprise code such as EJBs and Transactional(JTA) 
+      <!-- Arquillian allows you to test enterprise code such as EJBs and Transactional(JTA)
          JPA from JUnit/TestNG -->
       <dependency>
          <groupId>org.jboss.arquillian.junit</groupId>
@@ -218,13 +239,45 @@
          <version>4.1.1</version>
       </dependency>
 
+
+       <!-- Deltaspike API. We use compile scope as we need compile against its API -->
+       <dependency>
+           <groupId>org.apache.deltaspike.core</groupId>
+           <artifactId>deltaspike-core-api</artifactId>
+           <scope>compile</scope>
+       </dependency>
+
+       <!-- Deltaspike Impl. we use runtime scope as we need its implementation
+   dependencies only on runtime -->
+       <dependency>
+           <groupId>org.apache.deltaspike.core</groupId>
+           <artifactId>deltaspike-core-impl</artifactId>
+           <scope>runtime</scope>
+       </dependency>
+
+       <!-- Deltaspike Security Module API. We use compile scope as we need
+   to compile against its API -->
+       <dependency>
+           <groupId>org.apache.deltaspike.modules</groupId>
+           <artifactId>deltaspike-security-module-api</artifactId>
+           <scope>compile</scope>
+       </dependency>
+
+       <!-- Deltaspike Security Impl. we use runtime scope as we need its implementation
+   dependencies only on runtime -->
+       <dependency>
+           <groupId>org.apache.deltaspike.modules</groupId>
+           <artifactId>deltaspike-security-module-impl</artifactId>
+           <scope>runtime</scope>
+       </dependency>
+
    </dependencies>
    <build>
-      <!-- Maven will append the version to the finalName (which is the name 
+      <!-- Maven will append the version to the finalName (which is the name
          given to the generated war, and hence the context root) -->
       <finalName>${project.artifactId}</finalName>
       <plugins>
-         <!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation 
+         <!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation
             processors -->
          <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -244,7 +297,7 @@
             </configuration>
          </plugin>
          <!-- The JBoss AS plugin deploys your war to a local JBoss AS container -->
-         <!-- To use, set the JBOSS_HOME environment variable and run: mvn package 
+         <!-- To use, set the JBOSS_HOME environment variable and run: mvn package
             jboss-as:deploy -->
          <plugin>
             <groupId>org.jboss.as.plugins</groupId>
@@ -255,9 +308,9 @@
    </build>
    <profiles>
       <profile>
-         <!-- The default profile skips all tests, though you can tune it to run 
+         <!-- The default profile skips all tests, though you can tune it to run
             just unit tests based on a custom pattern -->
-         <!-- Seperate profiles are provided for running all tests, including Arquillian 
+         <!-- Seperate profiles are provided for running all tests, including Arquillian
             tests that execute in the specified container -->
          <id>default</id>
          <activation>
@@ -273,17 +326,17 @@
          </build>
       </profile>
       <profile>
-         <!-- We add the JBoss repository as we need the JBoss AS connectors for 
+         <!-- We add the JBoss repository as we need the JBoss AS connectors for
             Arquillian -->
          <repositories>
-            <!-- The JBoss Community public repository is a composite repository 
+            <!-- The JBoss Community public repository is a composite repository
                of several major repositories -->
             <!-- see http://community.jboss.org/wiki/MavenGettingStarted-Users -->
             <repository>
                <id>jboss-public-repository</id>
                <name>JBoss Repository</name>
                <url>http://repository.jboss.org/nexus/content/groups/public</url>
-               <!-- These optional flags are designed to speed up your builds by reducing 
+               <!-- These optional flags are designed to speed up your builds by reducing
                   remote server calls -->
                <releases>
                </releases>
@@ -304,33 +357,26 @@
                </snapshots>
             </pluginRepository>
          </pluginRepositories>
-         <!-- An optional Arquillian testing profile that executes tests in your 
+         <!-- An optional Arquillian testing profile that executes tests in your
             JBoss AS instance -->
-         <!-- This profile will start a new JBoss AS instance, and execute the 
+         <!-- This profile will start a new JBoss AS instance, and execute the
             test, shutting it down when done -->
          <!-- Run with: mvn clean test -Parq-jbossas-managed -->
          <id>arq-jbossas-managed</id>
-         <dependencies>
-            <dependency>
-               <groupId>org.jboss.as</groupId>
-               <artifactId>jboss-as-arquillian-container-managed</artifactId>
-               <version>7.1.0.Beta1b</version>
-               <scope>test</scope>
-            </dependency>
-         </dependencies>
+
       </profile>
       <profile>
-         <!-- We add the JBoss repository as we need the JBoss AS connectors for 
+         <!-- We add the JBoss repository as we need the JBoss AS connectors for
             Arquillian -->
          <repositories>
-            <!-- The JBoss Community public repository is a composite repository 
+            <!-- The JBoss Community public repository is a composite repository
                of several major repositories -->
             <!-- see http://community.jboss.org/wiki/MavenGettingStarted-Users -->
             <repository>
                <id>jboss-public-repository</id>
                <name>JBoss Repository</name>
                <url>http://repository.jboss.org/nexus/content/groups/public</url>
-               <!-- These optional flags are designed to speed up your builds by reducing 
+               <!-- These optional flags are designed to speed up your builds by reducing
                   remote server calls -->
                <releases>
                </releases>
@@ -351,18 +397,11 @@
                </snapshots>
             </pluginRepository>
          </pluginRepositories>
-         <!-- An optional Arquillian testing profile that executes tests in a remote 
+         <!-- An optional Arquillian testing profile that executes tests in a remote
             JBoss AS instance -->
          <!-- Run with: mvn clean test -Parq-jbossas-remote -->
          <id>arq-jbossas-remote</id>
-         <dependencies>
-            <dependency>
-               <groupId>org.jboss.as</groupId>
-               <artifactId>jboss-as-arquillian-container-remote</artifactId>
-               <version>7.1.1.Final</version>
-               <scope>test</scope>
-            </dependency>
-         </dependencies>
+
          <build>
             <plugins>
                <plugin>
@@ -379,11 +418,11 @@
          </build>
       </profile>
       <profile>
-         <!-- When built in OpenShift the 'openshift' profile will be used when 
+         <!-- When built in OpenShift the 'openshift' profile will be used when
             invoking mvn. -->
-         <!-- Use this profile for any OpenShift specific customization your app 
+         <!-- Use this profile for any OpenShift specific customization your app
             will need. -->
-         <!-- By default that is to put the resulting archive into the 'deployments' 
+         <!-- By default that is to put the resulting archive into the 'deployments'
             folder. -->
          <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
          <id>openshift</id>

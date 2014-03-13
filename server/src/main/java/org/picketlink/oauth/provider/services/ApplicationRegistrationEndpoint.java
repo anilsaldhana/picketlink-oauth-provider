@@ -27,13 +27,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
- 
+
 import org.picketlink.Identity;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.model.Agent;
+import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.SimpleAgent;
-import org.picketlink.idm.model.User;
+import org.picketlink.idm.model.basic.Agent;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.User;
 import org.picketlink.oauth.provider.model.ApplicationRegistrationRequest;
 import org.picketlink.oauth.provider.model.ApplicationRegistrationResponse;
 import org.picketlink.oauth.provider.security.UserLoggedIn;
@@ -48,7 +49,7 @@ import org.picketlink.oauth.provider.security.UserLoggedIn;
 @Path("/appregister")
 @TransactionAttribute
 public class ApplicationRegistrationEndpoint {
-    
+
     @Inject
     private Identity identity;
 
@@ -65,36 +66,37 @@ public class ApplicationRegistrationEndpoint {
         String appName = request.getAppName().trim();
         String appURL = request.getAppURL();
 
-        User user = identity.getUser();
+        User user = (User) identity.getAccount();
+        String userID = user.getLoginName();
 
         if(existsAgent(appName)){
             response.setRegistered(false);
             response.setErrorMessage("Application Already Registered");
         } else {
-            Agent oauthApp = createAgent(appName); 
+            Agent oauthApp = createAgent(appName);
             oauthApp.setAttribute( new Attribute<String>("appURL", appURL) );
-            oauthApp.setAttribute( new Attribute<String>("owner", user.getId()) );
-            
+            oauthApp.setAttribute( new Attribute<String>("owner",userID));
+
             oauthApp.setAttribute( new Attribute<String>("clientID", getUID()) );
             oauthApp.setAttribute( new Attribute<String>("clientSecret", getUID()) );
             identityManager.update(oauthApp);
             response.setRegistered(true);
-        } 
+        }
 
         return response;
     }
 
     private boolean existsAgent(String id){
-        Agent existingAgent = identityManager.getAgent(id);
+        Agent existingAgent = BasicModel.getAgent(identityManager,id);
         return existingAgent != null;
     }
 
     private Agent createAgent(String id) {
-        Agent agent = new SimpleAgent(id);
+        Agent agent = new Agent(id);
         identityManager.add(agent);
-        return identityManager.getAgent(id);
+        return BasicModel.getAgent(identityManager,id);
     }
-    
+
     private String getUID(){
         return UUID.randomUUID().toString();
     }

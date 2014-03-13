@@ -25,8 +25,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
- 
+
 import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.User;
 import org.picketlink.oauth.provider.model.AccountRegistrationResponse;
 
 /**
@@ -42,7 +44,7 @@ public class CheckUserNameEndpoint {
 
     /**
      * Check if an UserName is already taken
-     * 
+     *
      * @param userName
      * @return
      */
@@ -52,11 +54,13 @@ public class CheckUserNameEndpoint {
 
         AccountRegistrationResponse response = new AccountRegistrationResponse();
 
-        if (this.identityManager.getUser(userName) != null) {
+        User user = BasicModel.getUser(identityManager,userName);
+
+        if (user != null) {
             response.setRegistered(true);
         }
-        
+
         return response;
     }
-    
+
 }

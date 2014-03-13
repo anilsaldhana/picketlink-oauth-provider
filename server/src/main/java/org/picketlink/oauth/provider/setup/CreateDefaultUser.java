@@ -23,11 +23,12 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 
 import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.PartitionManager;
+import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Role;
-import org.picketlink.idm.model.SimpleRole;
-import org.picketlink.idm.model.SimpleUser;
-import org.picketlink.idm.model.User;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.Role;
+import org.picketlink.idm.model.basic.User;
 
 /**
  * Create an Admin user
@@ -37,19 +38,27 @@ import org.picketlink.idm.model.User;
 @Singleton
 @Startup
 public class CreateDefaultUser {
-    @Inject IdentityManager identityManager;
+    @Inject PartitionManager partitionManager;
 
     @PostConstruct
     public void create() {
-        User admin = new SimpleUser("admin");
+        String password = SecurityActions.getSystemProperty("picketlink.oauth.admin");
+        if(password == null){
+            throw new RuntimeException("picketlink.oauth.admin system property not setup");
+        }
+        User admin = new User("admin");
         admin.setEmail("admin@acme.com");
 
-        this.identityManager.add(admin);
-        this.identityManager.updateCredential(admin, new Password("secret"));
+        IdentityManager identityManager = partitionManager.createIdentityManager();
 
-        Role roleAdmin = new SimpleRole("administrator");
-        this.identityManager.add(roleAdmin);
+        identityManager.add(admin);
+        identityManager.updateCredential(admin, new Password(password));
 
-        identityManager.grantRole(admin, roleAdmin);
+        Role roleAdmin = new Role("administrator");
+        identityManager.add(roleAdmin);
+
+        RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
+        BasicModel.grantRole(relationshipManager,admin,roleAdmin);
+        //identityManager.grantRole(admin, roleAdmin);
     }
 }

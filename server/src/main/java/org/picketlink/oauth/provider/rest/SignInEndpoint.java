@@ -37,7 +37,7 @@ import org.picketlink.oauth.provider.model.AuthenticationResponse;
 
 /**
  * <p>JAX-RS Endpoint to authenticate users.</p>
- * 
+ *
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
@@ -45,19 +45,18 @@ import org.picketlink.oauth.provider.model.AuthenticationResponse;
 @Path("/signin")
 @TransactionAttribute
 public class SignInEndpoint {
-    
+
     @Inject
-    //private PicketBoxIdentity identity;
     private Identity identity;
-    
+
     @Inject
     private DefaultLoginCredentials credential;
-    
+
     @Context private HttpServletRequest httpServletRequest;
-    
+
     /**
      * <p>Performs the authentication using the informations provided by the {@link AuthenticationRequest}</p>
-     * 
+     *
      * @param authcRequest
      * @return
      */
@@ -68,10 +67,10 @@ public class SignInEndpoint {
         if (this.identity.isLoggedIn()) {
             return createResponse(authcRequest);
         }
-        
+
         this.credential.setUserId(authcRequest.getUserId());
         this.credential.setCredential(new Password(authcRequest.getPassword().toCharArray()));
- 
+
         this.identity.login();
 
         return createResponse(authcRequest);
@@ -79,15 +78,15 @@ public class SignInEndpoint {
 
     private AuthenticationResponse createResponse(AuthenticationRequest authcRequest) {
         AuthenticationResponse response = new AuthenticationResponse();
-        
+
         response.setUserId(authcRequest.getUserId());
         response.setLoggedIn(this.identity.isLoggedIn());
-        
+
         if (response.isLoggedIn()) {
             //response.setToken(this.identity.getUserContext().getSession().getId().getId().toString());
             response.setToken(httpServletRequest.getSession().getId());
         }
-        
+
         return response;
-    }   
+    }
 }

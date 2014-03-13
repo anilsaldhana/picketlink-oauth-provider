@@ -51,30 +51,30 @@ import org.picketlink.oauth.provider.rest.UserInfoEndpoint;
  * destination endpoint.
  * </p>
  * <p>
- * If the token is valid, the {@link DefaultPicketBoxIdentity} will restored with the all user information.
+ * If the token is valid, the {@link org.picketlink.Identity} will restored with the all user information.
  * </p>
- * 
+ *
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * 
+ *
  */
 //@ApplicationScoped
 @ServerInterceptor
 public class SecurityInterceptor implements PreProcessInterceptor {
 
    // private Logger log = Logger.getLogger(SecurityInterceptor.class);
-    
+
     private static final String AUTH_TOKEN_HEADER_NAME = "Auth-Token";
-    
+
     @Inject
     //private PicketBoxIdentity identity;
     private Identity identity;
-    
+
     @Context
     private HttpServletRequest httpServletRequest;
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.jboss.resteasy.spi.interception.PreProcessInterceptor#preProcess(org.jboss.resteasy.spi.HttpRequest,
      * org.jboss.resteasy.core.ResourceMethod)
      */
@@ -115,7 +115,7 @@ public class SecurityInterceptor implements PreProcessInterceptor {
      * <p>
      * Retrieve the token from the request, if present.
      * </p>
-     * 
+     *
      * @param request
      * @return
      */
@@ -127,7 +127,7 @@ public class SecurityInterceptor implements PreProcessInterceptor {
         if (tokenHeader != null && !tokenHeader.isEmpty()) {
             token = tokenHeader.get(0);
         }
-        
+
         //Check cookies
         if(token == null){
             Map<String,Cookie> cookies = httpHeaders.getCookies();
@@ -144,7 +144,7 @@ public class SecurityInterceptor implements PreProcessInterceptor {
      * <p>
      * Checks if the {@link ResourceMethod} requires authentication.
      * </p>
-     * 
+     *
      * @param method
      * @return
      */

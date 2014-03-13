@@ -24,8 +24,8 @@ import java.lang.reflect.Method;
 import javax.enterprise.context.ApplicationScoped;
 import javax.interceptor.InvocationContext;
 
+import org.apache.deltaspike.security.api.authorization.Secures;
 import org.picketlink.Identity;
-import org.picketlink.deltaspike.Secures;
 
 /**
  * <p>
@@ -97,7 +97,7 @@ public class AuthorizationManager {
 
         return new String[] {};
     }
-    
+
     /**
      * <p>
      * Returns the an {@link Annotation} instance giving its class. The annotation will be looked up on method and type levels,

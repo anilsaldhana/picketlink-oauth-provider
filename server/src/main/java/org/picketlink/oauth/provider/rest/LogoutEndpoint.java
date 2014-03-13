@@ -27,7 +27,7 @@ import org.picketlink.Identity;
 
 /**
  * <p>JAX-RS Endpoint to logout users.</p>
- * 
+ *
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
@@ -37,11 +37,9 @@ public class LogoutEndpoint {
 
     @Inject
     private Identity identity;
-    
+
     /**
      * <p>Performs the logout.</p>
-     * 
-     * @param authcRequest
      * @return
      */
     @GET
@@ -50,5 +48,5 @@ public class LogoutEndpoint {
             this.identity.logout();
         }
     }
-   
+
 }

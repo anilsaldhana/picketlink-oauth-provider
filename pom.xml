@@ -37,12 +37,14 @@
    </developers>
 
    <properties>
-      <!-- Explicitly declaring the source encoding eliminates the following 
-         message: [WARNING] Using platform encoding (UTF-8 actually) to copy filtered 
+      <!-- Explicitly declaring the source encoding eliminates the following
+         message: [WARNING] Using platform encoding (UTF-8 actually) to copy filtered
          resources, i.e. build is platform dependent! -->
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <jboss.bom.version>1.0.0.M7</jboss.bom.version>
+      <jboss.bom.version>1.0.7.Final</jboss.bom.version>
+       <!-- PicketLink dependency versions -->
+       <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
    </properties>
 
     <modules>
@@ -53,27 +55,19 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- JBoss distributes a complete set of Java EE 6 APIs including 
-                a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or 
-                a collection) of artifacts. We use this here so that we always get the correct 
-                versions of artifacts. Here we use the jboss-javaee-6.0-with-tools stack 
-                (you can read this as the JBoss stack of the Java EE 6 APIs, with some extras 
-                tools for your project, such as Arquillian for testing) and the jboss-javaee-6.0-with-hibernate 
-                stack you can read this as the JBoss stack of the Java EE 6 APIs, with extras 
-                from the Hibernate family of projects) -->
-            <dependency>
-                <groupId>org.jboss.bom</groupId>
-                <artifactId>jboss-javaee-6.0-with-tools</artifactId>
-                <version>${jboss.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>org.jboss.bom</groupId>
                 <artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
                 <version>${jboss.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency> <!-- Dependency Management for PicketLink and Java EE 6.0. -->
+            <dependency>
+                <groupId>org.picketlink</groupId>
+                <artifactId>picketlink-javaee-6.0</artifactId>
+                <version>${version.picketlink.javaee.bom}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
