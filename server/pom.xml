@@ -40,7 +40,7 @@
       <!-- <javaee6.spec.version>3.0.0.Beta1-redhat-1</javaee6.spec.version> -->
       <jboss.logging.version>3.1.0.GA</jboss.logging.version>
        <!-- PicketLink dependency versions -->
-       <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
+       <version.picketlink.javaee.bom>2.6.0.CR1</version.picketlink.javaee.bom>
    </properties>
    <dependencyManagement>
        <dependencies>
