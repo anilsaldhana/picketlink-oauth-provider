@@ -44,7 +44,7 @@
 
       <jboss.bom.version>1.0.7.Final</jboss.bom.version>
        <!-- PicketLink dependency versions -->
-       <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
+       <version.picketlink.javaee.bom>2.6.0.CR1</version.picketlink.javaee.bom>
    </properties>
 
     <modules>
